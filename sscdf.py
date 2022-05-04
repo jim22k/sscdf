@@ -66,19 +66,22 @@ def info(fp):
     return ret
 
 
-def read(fp):
-    with Reader(fp) as r:
+def read(file):
+    with Reader(file) as r:
         return r.read()
 
 
-def write(fp, x, comment=None):
-    with Writer(fp) as w:
-        w.write(x, comment=comment)
+def write(file, x, comment=None, *, format=None):
+    with Writer(file) as w:
+        w.write(x, comment=comment, format=format)
 
 
 class Reader:
-    def __init__(self, fp):
-        self.ds = nc.Dataset(fp, 'r')
+    def __init__(self, file):
+        if hasattr(file, 'close'):
+            self.ds = nc.Dataset('.', 'r', memory=file.read())
+        else:
+            self.ds = nc.Dataset(file, 'r')
         try:
             verstr = self.ds.getncattr('version')
             version = tuple(int(x) for x in verstr.split('.'))
@@ -163,10 +166,12 @@ class Reader:
 
 
 class Writer:
-    def __init__(self, fp):
-        if isinstance(fp, str) and '.' not in fp:
-            fp = f"{fp}.{_EXT}"
-        self.ds = nc.Dataset(fp, 'w')
+    def __init__(self, file):
+        self._fp = file
+        if hasattr(file, 'close'):
+            self.ds = nc.Dataset('.', 'w', memory=100)
+        else:
+            self.ds = nc.Dataset(file, 'w')
         self.ds.setncattr('version', '1.0')
 
         self._primary_written = False
@@ -179,10 +184,12 @@ class Writer:
 
     def close(self):
         if self.ds:
-            self.ds.close()
+            buffer = self.ds.close()
+            if hasattr(self._fp, 'close'):
+                self._fp.write(buffer)
 
     @staticmethod
-    def _save_tensor(ds, obj, comment=None):
+    def _save_tensor(ds, obj, comment=None, format=None):
         objtype = gb.utils.output_type(obj)
         if objtype == gb.Scalar:
             exp = {'dtype': obj.dtype.name.lower()}
@@ -192,7 +199,7 @@ class Writer:
                 fmt = 'scalar'
                 exp['value'] = np.array(obj.value, dtype=obj.dtype.np_type)
         elif objtype in (gb.Vector, gb.Matrix):
-            fmt = obj.ss.format
+            fmt = obj.ss.format if format is None else format
             raw = fmt.startswith('full') or fmt.startswith('bitmap')
             exp = obj.ss.export(fmt, raw=raw, sort=True)
         else:
@@ -204,6 +211,8 @@ class Writer:
             dtype = _dtype_map[gb.dtypes.lookup_dtype(arr.dtype).name.lower()]
             if key == 'value' or (key == 'values' and exp['is_iso']):
                 var = ds.createVariable(key, dtype, ())
+                if len(arr.shape) > 0:
+                    arr = np.array(arr[0], arr.dtype)
             else:
                 ds.createDimension(key, len(arr))
                 var = ds.createVariable(key, dtype, (key,), zlib=True)
@@ -217,7 +226,7 @@ class Writer:
         if comment:
             ds.setncattr('comment', comment)
 
-    def write(self, x, *, name=None, comment=None):
+    def write(self, x, *, name=None, comment=None, format=None):
         if name is None:
             if self._primary_written:
                 raise SsCdfWriteError("Primary tensor has already been written. Additional tensors require a name.")
@@ -227,4 +236,4 @@ class Writer:
             if name in self.ds.groups:
                 raise SsCdfWriteError(f"A tensor named '{name}' already exists.")
             grp = self.ds.createGroup(name)
-            self._save_tensor(grp, x, comment=comment)
+            self._save_tensor(grp, x, comment=comment, format=format)

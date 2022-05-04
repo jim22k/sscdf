@@ -54,7 +54,7 @@ if the primary object is a matrix, the transpose might be saved as a secondary f
 or mean value might also be saved as a secondary object. These types of pre-computed statistics are
 often helpful for algorithms, and saving them avoids the need to recompute them later.
 
-While this is the typical usage, no restricting is placed on secondary objects other than that they
+While this is the typical usage, no restriction is placed on secondary objects other than that they
 each be described by a unique name.
 
 ## Details of Storing a Single Object
@@ -80,7 +80,7 @@ for the use of describing the data to human users.
 
 ### Arrays
 The various SuiteSparse::GraphBLAS formats describe sparse objects using different combinations of dense arrays.
-These dense arrays are storedas netCDF Variables linked to a single Dimension.
+These dense arrays are stored as netCDF Variables linked to a single Dimension.
 Each Dimension is used by exactly one Variable, making them independent 1-D arrays.
 The Dimensions are always sized (i.e. Unlimited is not allowed) according to the size of the dense array they will represent.
 
@@ -117,16 +117,16 @@ A matrix has two shape dimensions, stored as u8 Scalars:
 These represent the overall dimensions of the sparse matrix.
 
 There are 10 available formats for storing matrices:
-- csr (compressed sparse row)
-- csc (compressed sparse column)
-- hypercsr (hypersparse CSR)
-- hypercsc (hypersparse CSC)
-- bitmapr (row-oriented bitmap)
-- bitmapc (column-oriented bitmap)
-- fullr (row-oriented dense)
-- fullc (column-oriented dense)
-- coor (coordinate format in row-sorted order)
-- cooc (coordinate format in column-sorted order)
+- **csr** : *compressed sparse row*
+- **csc** : *compressed sparse column*
+- **hypercsr** : *hypersparse CSR*)
+- **hypercsc** : *hypersparse CSC*)
+- **bitmapr** : *row-oriented bitmap*)
+- **bitmapc** : *column-oriented bitmap*)
+- **fullr** : *row-oriented dense*)
+- **fullc** : *column-oriented dense*)
+- **coor** : *coordinate format in row-sorted order*)
+- **cooc** : *coordinate format in column-sorted order*)
 
 Each format has a row-wise and column-wise orientation which affects the ability to easily iterate over the values in that direction.
 
@@ -154,9 +154,9 @@ A vector has one shape dimension, stored as a u8 Scalar:
 This represents the overall size of the sparse vector, not the number of non-empty values.
 
 There are 3 available formats for storing vectors:
-- sparse
-- bitmap
-- full
+- **sparse**
+- **bitmap**
+- **full**
 
 The following table details the expected array names and datatypes for each format.
 
@@ -170,8 +170,8 @@ The following table details the expected array names and datatypes for each form
 A scalar has no shape dimensions to store.
 
 There are 2 available formats for storing scalars:
-- scalar
-- scalar_empty
+- **scalar**
+- **scalar_empty**
 
 The following table details the expected Scalar names.
 

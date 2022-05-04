@@ -1,0 +1,9 @@
+name: sscdf
+channels:
+    - conda-forge
+dependencies:
+    - python=3.9
+    - python-graphblas
+    - pandas
+    - netcdf4
+    - pytest
