@@ -71,8 +71,8 @@ The format is used to determine the whether the object is a Matrix, Vector, or S
 are unique across all ranks of tensors. The format also determines what named arrays
 must exist.
 
-The dtype represents the GraphBLAS datatype and is usually a redundant piece of information, given that netCDF arrays contain
-their dtype. However, GraphBLAS bool type does not have an equivalent data type in netCDF, so
+The datatype represents the GraphBLAS datatype and is usually a redundant piece of information, given that netCDF arrays contain
+their datatype. However, GraphBLAS bool type does not have an equivalent data type in netCDF, so
 this attribute allows for proper roundtripping of GraphBLAS objects of all data types.
 
 The comment is optional and is not used when reconstituting the GraphBLAS object. It is purely
@@ -114,19 +114,17 @@ A matrix has two shape dimensions, stored as u8 Scalars:
 - nrows
 - ncols
 
-These represent the overall dimensions of the sparse matrix.
-
 There are 10 available formats for storing matrices:
 - **csr** : *compressed sparse row*
 - **csc** : *compressed sparse column*
-- **hypercsr** : *hypersparse CSR*)
-- **hypercsc** : *hypersparse CSC*)
-- **bitmapr** : *row-oriented bitmap*)
-- **bitmapc** : *column-oriented bitmap*)
-- **fullr** : *row-oriented dense*)
-- **fullc** : *column-oriented dense*)
-- **coor** : *coordinate format in row-sorted order*)
-- **cooc** : *coordinate format in column-sorted order*)
+- **hypercsr** : *hypersparse CSR*
+- **hypercsc** : *hypersparse CSC*
+- **bitmapr** : *row-oriented bitmap*
+- **bitmapc** : *column-oriented bitmap*
+- **fullr** : *row-oriented dense*
+- **fullc** : *column-oriented dense*
+- **coor** : *coordinate format in row-sorted order*
+- **cooc** : *coordinate format in column-sorted order*
 
 Each format has a row-wise and column-wise orientation which affects the ability to easily iterate over the values in that direction.
 
@@ -151,7 +149,7 @@ Note that 2-D bitmap and full arrays are stored as flattened 1-D arrays.
 A vector has one shape dimension, stored as a u8 Scalar:
 - size
 
-This represents the overall size of the sparse vector, not the number of non-empty values.
+Note: The size represents the overall size of the sparse vector, not the number of non-empty values.
 
 There are 3 available formats for storing vectors:
 - **sparse**
@@ -189,6 +187,6 @@ iso-valued objects are handled in an efficient format. Rather than duplicating t
 it is stored as a single value.
 
 All formats use the name "values" for the array of values. When the object is iso-valued, the
-"values" is stored as a Scalar rather than as an Array. When reading the sscdf format,
+"values" is stored as a netCDF Scalar rather than as an Array. When reading the sscdf format,
 the "values" must be checked to see if it is associated with a Dimension. If it is not, it means
 the object is iso-valued.
