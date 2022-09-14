@@ -1,0 +1,35 @@
+package:
+  name: sscdf
+  version: 0.0.1
+
+source:
+  path: ..
+
+build:
+  number: 0
+  script: python -m pip install --no-deps --ignore-installed .
+  noarch: python
+
+requirements:
+  host:
+    - python
+  run:
+    - python
+    - python-graphblas
+    - netcdf4
+
+test:
+  requires:
+    - pytest
+  commands:
+    - pytest --pyargs sscdf.tests
+
+about:
+  home: https://github.com/jim22k/sscdf
+  license: Apache 2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: Binsparse format for python-graphblas + netCDF4
+  description: |
+      Implementation of binsparse format for python-graphblas using netCDF4 as a container
+  dev_url: https://github.com/jim22k/sscdf

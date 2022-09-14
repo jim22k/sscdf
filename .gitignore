@@ -75,6 +75,7 @@ venv.bak/
 
 # pycharm
 .idea/
+.DS_Store
 
 # mypy
 .mypy_cache/
