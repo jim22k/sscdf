@@ -2,10 +2,11 @@ import os
 import json
 import netCDF4 as nc
 import graphblas as gb
+from pathlib import Path
 from .highlevel import deconstruct, construct, validate_metadata, _format_keys
 from .exceptions import SsCdfError, SsCdfReadError, SsCdfWriteError
 
-_EXT = "sscdf"
+_EXT = ".sscdf"
 _dtype_map = {
     'bool': 'i1',  # no equivalent type
     'int8': 'i1',
@@ -26,9 +27,14 @@ class Reader:
         if hasattr(file, 'close'):
             self.ds = nc.Dataset('.', 'r', memory=file.read())
         else:
-            if '.' not in file:
-                if not os.path.exists(file) and os.path.exists(f'{file}.{_EXT}'):
-                    file = f'{file}.{_EXT}'
+            if isinstance(file, Path):
+                if not file.suffix:
+                    if not os.path.exists(file) and os.path.exists(file.with_suffix(_EXT)):
+                        file = file.with_suffix(_EXT)
+            elif isinstance(file, str):
+                if '.' not in file:
+                    if not os.path.exists(file) and os.path.exists(f'{file}{_EXT}'):
+                        file = f'{file}{_EXT}'
             self.ds = nc.Dataset(file, 'r')
 
     def __enter__(self):
@@ -96,8 +102,12 @@ class Writer:
         if hasattr(file, 'close'):
             self.ds = nc.Dataset('.', 'w', memory=100)
         else:
-            if '.' not in file:
-                file = f'{file}.{_EXT}'
+            if isinstance(file, Path):
+                if not file.suffix:
+                    file = file.with_suffix(_EXT)
+            elif isinstance(file, str):
+                if '.' not in file:
+                    file = f'{file}{_EXT}'
             self.ds = nc.Dataset(file, 'w')
 
         self._primary_written = False

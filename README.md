@@ -30,7 +30,6 @@ the preferred method is using a `Writer` in a `with` block.
 with sscdf.Writer(filename) as w:
     w.write(my_matrix, comment="Data came from the internet")
     w.write(my_matrix.reduce_rowwise(), name="row_degrees")
-    w.write(my_matrix.reduce_scalar(), name="total_sum")
 ```
 
 ## Multiple Object Loading
@@ -41,7 +40,6 @@ objects is using a `Reader` in a `with` block.
 with sscdf.Reader(filename) as r:
     my_matrix = r.read()
     row_degrees = r.read('row_degrees')
-    total = r.read('total_sum')
 ```
 
 ## Inspecting sscdf Files
@@ -51,20 +49,22 @@ secondary objects in the file.
 
 ```python
 >>> sscdf.info(filename)
-{'format': 'csr',
- 'datatype': 'int64',
+{'version': '1.0',
+ 'format': 'CSR',
+ 'shape': [5, 5],
+ 'data_types': {
+     'pointers_0': 'uint64',
+     'indices_1': 'uint64',
+     'values': 'float32'},
  'comment': 'Data came from the internet',
- 'nrows': 4,
- 'ncols': 4,
  'SECONDARY': {
      'row_degrees': {
-         'format': 'full',
-         'datatype': 'int64',
-         'size': 4
-     },
-     'total_sum': {
-         'format': 'scalar',
-         'datatype': 'int64'
+         'version': '1.0',
+         'format': 'VEC',
+         'shape': [5],
+         'data_types': {
+             'indices_0': 'uint64',
+             'values': 'float32'},
      }
  }
 }

@@ -68,7 +68,7 @@ def validate_metadata(metadata):
         raise SsCdfValidationError(f'Expected data_types to be a dict, found {type(datatypes)}')
     for name in _format_keys[format]:
         if name not in datatypes:
-            raise SsCdfValidationError(f'Datatype is missing an entry for {name}')
+            raise SsCdfValidationError(f'data_types is missing an entry for {name}')
 
 
 def construct(metadata, arrays, name=None):
